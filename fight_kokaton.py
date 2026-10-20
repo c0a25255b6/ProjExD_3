@@ -24,7 +24,16 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
-
+class Score:
+    def __init__(self):
+        self.value = 0
+        self.fonto = pg.font.Font(None, 50)
+        self.img = self.fonto.render(f"Score: {self.value}", 0,  (0, 0, 255))
+        
+    def update(self, screen: pg.Surface):
+        self.img = self.fonto.render(f"Score: {self.value}", 0, (0, 0, 255))
+        screen.blit(self.img, (100, 50))
+       
 class Bird:
     """
     ゲームキャラクター（こうかとん）に関するクラス
@@ -107,7 +116,8 @@ class Beam:
         """
         if check_bound(self.rct) == (True, True):
             self.rct.move_ip(self.vx, self.vy)
-            screen.blit(self.img, self.rct)    
+            screen.blit(self.img, self.rct)
+
 
 
 class Bomb:
@@ -154,6 +164,7 @@ def main():
     beam = None  # ゲーム初期化時にはビームは存在しない
     clock = pg.time.Clock()
     tmr = 0
+    score =Score()
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -181,21 +192,19 @@ def main():
                         beam = None
                         bombs[i] = None
                         bird.change_img(6, screen)#喜びエフェクト
+                        Score.value += 1
                         pg.display.update()
         bombs = [bomb for bomb in bombs if bomb is not None]
             
-
+       
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         if beam is not None:
             beam.update(screen)
         for bomb in bombs: 
             bomb.update(screen)
-        pg.display.update()
-        tmr += 1
-        clock.tick(50)
-
-
+        score.update(screen)
+        
 if __name__ == "__main__":
     pg.init()
     main()
